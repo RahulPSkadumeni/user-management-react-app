@@ -19,6 +19,7 @@ export const checkValidData = (
   let isAddressLine2 = /^\b[0-9\\\/# ,a-zA-Z]{6,}[ ,]+[0-9\\\/#, a-zA-Z]{1,}$/.test(
     address2
   );
+
   if (!isAddressLine1) {
     return "Enter valid address";
   }

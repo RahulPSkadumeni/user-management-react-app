@@ -1,28 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { checkValidData } from "../utils/validation";
-import "react-phone-number-input/style.css"; // Import the styles
-import PhoneInput from "react-phone-number-input";
-import Select from "react-select";
-
+import { updateUser } from "../utils/userSlice";
 import {
   fetchCountries,
   fetchStatesByCountry,
   generateAuthToken,
-  //getStatesByCountry,
 } from "../utils/stateList";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../utils/userSlice";
-import { useNavigate } from "react-router-dom";
-const RegistrationForm = () => {
+import Select from "react-select";
+
+import PhoneInput from "react-phone-number-input";
+
+const Update = () => {
+  const [countriesList, setCountriesList] = useState([]);
+  const users = useSelector((state) => state.user);
+  const params = useParams();
+  const id = parseInt(params.id);
+  const existingUser = users.filter((f) => f.id === id);
+  console.log(existingUser[0]);
+  const [userData, setUserData] = useState(existingUser[0]);
+  const [selectedCountry, setSelectedCountry] = useState(userData.country);
+  console.log("selectedCountry", selectedCountry);
+  const [selectedState, setSelectedState] = useState(userData.state);
+  console.log("state", selectedState);
+  const [phoneValue, setPhoneValue] = useState(userData.phone.toString());
+  console.log(phoneValue);
   const [errorMessage, setErrorMessage] = useState(null);
-  const email = useRef(null);
+  const [email, setEmail] = useState(userData.email);
   const password = useRef(null);
-  const firstName = useRef(null);
+  const [firstName, setFirstName] = useState(userData.firstName);
   const phone = useRef("");
-  const zipCode = useRef(null);
-  const secondName = useRef(null);
-  const addressLine1 = useRef(null);
-  const addressLine2 = useRef(null);
+  const [zipCode, setZipCode] = useState(userData.zipCode);
+  const [secondName, setSecondName] = useState(userData.secondName);
+  const [addressLine1, setAddressLine1] = useState(userData.addressLine1);
+  const [addressLine2, setAddressLine2] = useState(userData.addressLine2);
+
   const state = useRef(null);
 
   const [states, setStates] = useState([]);
@@ -33,14 +46,6 @@ const RegistrationForm = () => {
   //   { value: "mx", label: "Mexico" },
   //   //Add more countries as needed
   // ];
-  const [countriesList, setCountriesList] = useState([]);
-  const users = useSelector((state) => state.user);
-  const [selectedCountry, setSelectedCountry] = useState({
-    value: "IN",
-    label: "India",
-  });
-  console.log("selectedCountry", selectedCountry);
-  const [selectedState, setSelectedState] = useState("");
 
   const [countryDataFetched, setCountryDataFetched] = useState(false);
   const [stateDataFetched, setStateDataFetched] = useState(false);
@@ -51,37 +56,35 @@ const RegistrationForm = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    console.log(email.current.value);
-    console.log(phone.current.value);
     console.log("handle button click");
     const message = checkValidData(
-      email.current.value,
+      email,
       // password.current.value,
-      zipCode.current.value,
-      addressLine1.current.value,
-      addressLine2.current.value
+      zipCode,
+      addressLine1,
+      addressLine2
     );
     console.log(message);
     setErrorMessage(message);
 
-    // if (message === true) {
-    //   navigate("/browse");
-    // }
+    // // if (message === true) {
+    // //   navigate("/browse");
+    // // }
     if (message === true) {
-      const user = {
-        id: users[users.length - 1].id + 1,
-        firstName: firstName.current.value,
-        secondName: secondName.current.value,
-        email: email.current.value,
-        addressLine1: addressLine1.current.value,
-        addressLine2: addressLine2.current.value,
-        zipCode: zipCode.current.value,
-        phone: phone.current,
+      const updatedUser = {
+        ...userData, // Keep existing user data
+        firstName: firstName,
+        secondName: secondName,
+        email: email,
+        addressLine1: addressLine1,
+        addressLine2: addressLine2,
+        zipCode: zipCode,
+        phone: phoneValue,
         country: selectedCountry,
-        state: selectedState,
+        userState: selectedState,
       };
-      console.log(user);
-      dispatch(addUser(user));
+      console.log("updation", updatedUser);
+      dispatch(updateUser(updatedUser));
       navigate("/");
     }
   };
@@ -122,11 +125,17 @@ const RegistrationForm = () => {
     }
     fetchStates();
   }, [selectedCountry]);
+  useEffect(() => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      phone: phoneValue,
+    }));
+  }, [phoneValue]);
   return (
     <div className="flex items-center justify-center mt-3 ">
       <div className="flex flex-col w-1/2 bg-black bg-opacity-80 rounded-md  ">
         <h1 className=" items-center justify-center  text-white  p-2 m-5  text-4xl font-bold ">
-          Registration Form
+          Update User Info
         </h1>
         <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
           {errorMessage ? (
@@ -136,16 +145,19 @@ const RegistrationForm = () => {
           ) : null}
           <div className="flex ">
             <input
-              className="m-4 p-2 rounded-lg h-12 w-1/2  bg-gray-600  text-white text-xl"
+              className="m-4 p-2 rounded-lg h-12 w-1/2 bg-gray-600 text-white text-xl"
               type="text"
               placeholder="First Name"
-              ref={firstName}
+              // ref={firstName}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
             <input
-              className="m-4 p-2 rounded-lg h-12  w-1/2 bg-gray-600  text-white text-xl"
+              className="m-4 p-2 rounded-lg h-12 w-1/2 bg-gray-600 text-white text-xl"
               type="text"
               placeholder="Second Name"
-              ref={secondName}
+              value={secondName}
+              onChange={(e) => setSecondName(e.target.value)}
             />
           </div>
 
@@ -153,41 +165,43 @@ const RegistrationForm = () => {
             className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
             type="text"
             placeholder="Email"
-            ref={email}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
             type="text"
-            placeholder="addressLine 1"
-            ref={addressLine1}
+            placeholder="address line 1"
+            value={addressLine1}
+            onChange={(e) => setAddressLine1(e.target.value)}
           />
           <input
             className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
             type="text"
-            placeholder="addressLine 2"
-            ref={addressLine2}
+            placeholder="address line 2 "
+            value={addressLine2}
+            onChange={(e) => setAddressLine2(e.target.value)}
           />
+
           <input
             className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
             type="text"
             placeholder="zip"
-            ref={zipCode}
-          />
-          {/* <input
-            className="m-5 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
-            type="password"
-            placeholder="Password"
-            ref={password}
-          /> */}
-          <PhoneInput
-            className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
-            defaultCountry={selectedCountry.value}
-            placeholder="Phone"
-            value={phone.current}
-            onChange={handlePhoneChange}
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
           />
 
-          {countryDataFetched && (
+          {userData && (
+            <PhoneInput
+              className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
+              defaultCountry={selectedCountry.value}
+              placeholder="Phone"
+              value={""}
+              onChange={(newPhoneValue) => setPhoneValue(newPhoneValue)}
+            />
+          )}
+
+          {selectedCountry && (
             <Select
               className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
               placeholder="Select country"
@@ -198,7 +212,7 @@ const RegistrationForm = () => {
             />
           )}
 
-          {stateDataFetched && (
+          {selectedState && (
             <Select
               className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
               placeholder="Select state"
@@ -221,4 +235,4 @@ const RegistrationForm = () => {
   );
 };
 
-export default RegistrationForm;
+export default Update;
