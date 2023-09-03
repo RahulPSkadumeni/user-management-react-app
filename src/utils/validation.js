@@ -12,14 +12,10 @@ export const checkValidData = (
   //let isPasswordValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
   let isZipValid = /^\d{6}$/.test(zip);
 
-  let isAddressLine1 = /^\b[0-9\\\/# ,a-zA-Z]{6,}[ ,]+[0-9\\\/#, a-zA-Z]{1,}$/.test(
-    address
-  );
+  let isAddressLine1 = /^[a-zA-Z' -]+$/.test(address);
 
-  let isAddressLine2 = /^\b[0-9\\\/# ,a-zA-Z]{6,}[ ,]+[0-9\\\/#, a-zA-Z]{1,}$/.test(
-    address2
-  );
-
+  let isAddressLine2 = /^[a-zA-Z' -]+$/.test(address2);
+  let isPhoneValid;
   if (!isAddressLine1) {
     return "Enter valid address";
   }
@@ -35,16 +31,8 @@ export const checkValidData = (
   if (!isZipValid) {
     return "Enter valid zip code";
   }
-
+  if (isPhoneValid === "") {
+    return "Enter valid phone number";
+  }
   return true;
 };
-
-// address sample ={
-//   1 Sleepy Boulevard PO, Box 65745
-// Suite #100 /98,North St,Snoozepura
-// Ave., New Jersey,
-// Suite 420 1130 Connect Ave., NW,
-// Suite 420 19 / 21 Old Avenue,
-// Suite 12, Springfield, VIC 3001
-// Suite#100/98 North St Snoozepura
-// }

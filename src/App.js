@@ -28,7 +28,7 @@ const appRouter = createBrowserRouter([
 
 function App() {
   return (
-    <div className="App flex flex-col   bg-emerald-100 h-screen ">
+    <div className="">
       {/* // <RegistrationForm /> */}
       <RouterProvider router={appRouter} />
     </div>

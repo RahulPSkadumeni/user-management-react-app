@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { checkValidData } from "../utils/validation";
 import { updateUser } from "../utils/userSlice";
-import {
-  fetchCountries,
-  fetchStatesByCountry,
-  generateAuthToken,
-} from "../utils/stateList";
+import { fetchCountries, fetchStatesByCountry } from "../utils/stateList";
 import Select from "react-select";
 
 import PhoneInput from "react-phone-number-input";
@@ -40,12 +36,6 @@ const Update = () => {
 
   const [states, setStates] = useState([]);
   console.log(" statesss", states);
-  // const state = [
-  //   { value: "us", label: "United States" },
-  //   { value: "ca", label: "Canada" },
-  //   { value: "mx", label: "Mexico" },
-  //   //Add more countries as needed
-  // ];
 
   const [countryDataFetched, setCountryDataFetched] = useState(false);
   const [stateDataFetched, setStateDataFetched] = useState(false);
@@ -62,14 +52,12 @@ const Update = () => {
       // password.current.value,
       zipCode,
       addressLine1,
-      addressLine2
+      addressLine2,
+      phoneValue
     );
     console.log(message);
     setErrorMessage(message);
 
-    // // if (message === true) {
-    // //   navigate("/browse");
-    // // }
     if (message === true) {
       const updatedUser = {
         ...userData, // Keep existing user data
@@ -98,13 +86,10 @@ const Update = () => {
     // fetchStatesByCountry();
     async function fetchData() {
       try {
-        const accessToken = await generateAuthToken(); // Generate the API token
-        setToken(accessToken);
-        const countryData = await fetchCountries(accessToken); // Fetch countries using the token
-        // console.log("first countryData", countryData);
-        // // Set the countriesList state after fetching data
+        const countryData = await fetchCountries();
+
         setCountriesList(countryData);
-        setCountryDataFetched(true); // Mark that country data has been fetched
+        setCountryDataFetched(true);
       } catch (error) {
         console.error("Error fetching countries:", error);
       }
@@ -114,11 +99,8 @@ const Update = () => {
 
   useEffect(() => {
     async function fetchStates() {
-      console.log("state fetch", selectedCountry.label);
-      const stateData = await fetchStatesByCountry(
-        Token,
-        selectedCountry.label
-      );
+      console.log("state fetch", selectedCountry.value);
+      const stateData = await fetchStatesByCountry(selectedCountry.value);
 
       setStates(stateData);
       setStateDataFetched(true); //Mark that states have been fetched
@@ -132,11 +114,16 @@ const Update = () => {
     }));
   }, [phoneValue]);
   return (
-    <div className="flex items-center justify-center mt-3 ">
-      <div className="flex flex-col w-1/2 bg-black bg-opacity-80 rounded-md  ">
+    <div className="flex bg-gray-500  justify-center mt-3 ">
+      <div className="flex flex-col w-1/2 bg-black bg-opacity-60 rounded-md m-5 p-5  ">
         <h1 className=" items-center justify-center  text-white  p-2 m-5  text-4xl font-bold ">
           Update User Info
         </h1>
+        <NavLink to="/">
+          <button className=" rounded-full text-white bg-emerald-700 w-36  p-2 ml-5   text-xl ">
+            Home
+          </button>
+        </NavLink>
         <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
           {errorMessage ? (
             <h1 className="ml-5 font-semibold text-xl text-yellow-600 ">
@@ -145,7 +132,7 @@ const Update = () => {
           ) : null}
           <div className="flex ">
             <input
-              className="m-4 p-2 rounded-lg h-12 w-1/2 bg-gray-600 text-white text-xl"
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
               type="text"
               placeholder="First Name"
               // ref={firstName}
@@ -153,7 +140,7 @@ const Update = () => {
               onChange={(e) => setFirstName(e.target.value)}
             />
             <input
-              className="m-4 p-2 rounded-lg h-12 w-1/2 bg-gray-600 text-white text-xl"
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
               type="text"
               placeholder="Second Name"
               value={secondName}
@@ -161,67 +148,72 @@ const Update = () => {
             />
           </div>
 
-          <input
-            className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
-            type="text"
-            placeholder="address line 1"
-            value={addressLine1}
-            onChange={(e) => setAddressLine1(e.target.value)}
-          />
-          <input
-            className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
-            type="text"
-            placeholder="address line 2 "
-            value={addressLine2}
-            onChange={(e) => setAddressLine2(e.target.value)}
-          />
+          <div className="flex ">
+            <input
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+              type="text"
+              placeholder="address line 1"
+              value={addressLine1}
+              onChange={(e) => setAddressLine1(e.target.value)}
+            />
+          </div>
+          <div className="flex ">
+            <input
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+              type="text"
+              placeholder="address line 2 "
+              value={addressLine2}
+              onChange={(e) => setAddressLine2(e.target.value)}
+            />
 
-          <input
-            className="m-4 p-2 rounded-lg h-12 bg-gray-600  text-white text-xl"
-            type="text"
-            placeholder="zip"
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value)}
-          />
+            <input
+              className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+              type="text"
+              placeholder="zip"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+            />
+          </div>
 
           {userData && (
             <PhoneInput
-              className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
+              className="m-6 p-4 rounded-lg h-12 bg-gray-300 text-black text-xl"
               defaultCountry={selectedCountry.value}
               placeholder="Phone"
               value={""}
               onChange={(newPhoneValue) => setPhoneValue(newPhoneValue)}
             />
           )}
+          <div className="flex">
+            {selectedCountry && (
+              <Select
+                className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+                placeholder="Select country"
+                options={countriesList}
+                value={selectedCountry}
+                onChange={setSelectedCountry}
+                //isMulti // Enable multi-select
+              />
+            )}
 
-          {selectedCountry && (
-            <Select
-              className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
-              placeholder="Select country"
-              options={countriesList}
-              value={selectedCountry}
-              onChange={setSelectedCountry}
-              //isMulti // Enable multi-select
-            />
-          )}
-
-          {selectedState && (
-            <Select
-              className="m-4 p-2 rounded-lg h-12 bg-gray-600 text-black text-xl"
-              placeholder="Select state"
-              options={states}
-              value={selectedState}
-              onChange={setSelectedState}
-              //isMulti // Enable multi-select
-            />
-          )}
+            {stateDataFetched && (
+              <Select
+                className="m-4 p-2 rounded-lg h-12 w-1/2  text-black  text-xl"
+                placeholder="Select state"
+                options={states}
+                value={selectedState}
+                onChange={setSelectedState}
+                //isMulti // Enable multi-select
+              />
+            )}
+          </div>
 
           <button
             className="bg-red-600 text-white m-4 p-2 rounded-lg h-12 font-bold text-xl "

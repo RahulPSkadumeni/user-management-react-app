@@ -61,8 +61,8 @@ const Home = () => {
   };
 
   return (
-    <>
-      <div className=" flex flex-col justify-center items-center text-6xl font-bold mt-5 ">
+    <div className="w-full p-5 ">
+      <div className=" flex flex-col  items-center text-6xl font-bold mt-5 ">
         User List
       </div>
 
@@ -72,58 +72,76 @@ const Home = () => {
       >
         Add User
       </button>
-
-      <table className="mt-5">
+      <table className="mt-5 w-full p-5  border-gray-300">
         <thead>
-          <tr className="border-2 text-xl border-black m-2 p-2">
-            <th>First Name</th>
-            <th>Second Name</th>
-            <th>Email</th>
-            <th>address Line 1</th>
-            <th>address Line 2</th>
-            <th>Phone</th>
-            <th>State</th>
-            <th>Country</th>
-            <th>Zip</th>
-            {/* Add more table headers for other user properties */}
+          <tr className="bg-gray-200 text-gray-700">
+            <th className="px-2 py-1 border border-gray-300">#</th>{" "}
+            {/* Row number column */}
+            <th className="px-2 py-1 border border-gray-300">First Name</th>
+            <th className="px-2 py-1 border border-gray-300">Second Name</th>
+            <th className="px-2 py-1 border border-gray-300">Email</th>
+            <th className="px-2 py-1 border border-gray-300">Address Line 1</th>
+            <th className="px-2 py-1 border border-gray-300">Address Line 2</th>
+            <th className="px-2 py-1 border border-gray-300">Phone</th>
+            <th className="px-2 py-1 border border-gray-300">State</th>
+            <th className="px-2 py-1 border border-gray-300">Country</th>
+            <th className="px-2 py-1 border border-gray-300">Zip</th>
+            <th className="px-2 py-1 border border-gray-300">Actions</th>{" "}
+            {/* Assuming these are action buttons */}
           </tr>
         </thead>
-        <tbody className="bg-slate-600 h-14 border-white">
+        <tbody>
           {userData.map((user, index) => (
             <tr
               key={user.id}
-              className="text-white border-white justify-center"
+              className={`bg-${
+                index % 2 === 0 ? "white" : "gray-100"
+              } text-gray-800`}
             >
-              <td className=" items-center">{user.firstName}</td>
-              <td>{user.secondName}</td>
-              <td>{user.email}</td>
-              <td>{user.addressLine1}</td>
-              <td>{user.addressLine2}</td>
-              <td>{user.phone}</td>
-              <td>{user.state.label}</td>
-              <td>{user.country.label}</td>
-              <td>{user.zipCode}</td>
-              <td className="flex flex-col ">
+              <td className="px-2 py-1 border border-gray-300">{index + 1}</td>{" "}
+              {/* Row number */}
+              <td className="px-2 py-1 border border-gray-300">
+                {user.firstName}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.secondName}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">{user.email}</td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.addressLine1}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.addressLine2}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">{user.phone}</td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.state.label}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.country.label}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">
+                {user.zipCode}
+              </td>
+              <td className="px-2 py-1 border border-gray-300">
                 <button
-                  className=" rounded-full  m-1  p-1 bg-green-600 font-bold text-2xl"
+                  className="rounded-full m-3  p-2 pl-3 pr-3 bg-green-600 text-white font-bold text-xl hover:bg-green-700"
                   onClick={() => handleEdit(user.id)}
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
-                  className=" rounded-full  m-1  p-1 bg-red-600 font-bold text-2xl"
+                  className="rounded-full m-3 p-2 pl-3 pr-3 bg-red-600 text-white font-bold text-xl hover:bg-red-700"
                 >
                   Delete
                 </button>
               </td>
-
-              {/* Add more table cells for other user properties */}
             </tr>
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
